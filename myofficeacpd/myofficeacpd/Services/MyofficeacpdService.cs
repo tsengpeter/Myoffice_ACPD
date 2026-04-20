@@ -19,11 +19,13 @@ namespace myofficeacpd.Services
         {
             var q = _db.MyOfficeAcpds.AsQueryable();
 
+            // 預設只回傳未停用資料，明確傳入 stop 參數時依照傳入值篩選
+            q = query.Stop.HasValue
+                ? q.Where(x => x.AcpdStop == query.Stop.Value)
+                : q.Where(x => x.AcpdStop == false);
+
             if (query.Status.HasValue)
                 q = q.Where(x => x.AcpdStatus == query.Status.Value);
-
-            if (query.Stop.HasValue)
-                q = q.Where(x => x.AcpdStop == query.Stop.Value);
 
             if (!string.IsNullOrWhiteSpace(query.Keyword))
                 q = q.Where(x =>
@@ -48,7 +50,8 @@ namespace myofficeacpd.Services
 
         public async Task<GetAcpdResultModel?> GetBySidAsync(string sid)
         {
-            var entity = await _db.MyOfficeAcpds.FindAsync(sid);
+            var entity = await _db.MyOfficeAcpds
+                .FirstOrDefaultAsync(x => x.AcpdSid == sid && x.AcpdStop == false);
 
             if (entity is null)
                 return null;
