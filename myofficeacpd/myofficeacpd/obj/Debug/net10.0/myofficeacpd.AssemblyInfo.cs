@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("myofficeacpd")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d05315661dd5f522800cffcc3b082a20c579dd7c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c5607490ac90e8426e65369b7129f8945177e1b")]
 [assembly: System.Reflection.AssemblyProductAttribute("myofficeacpd")]
 [assembly: System.Reflection.AssemblyTitleAttribute("myofficeacpd")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

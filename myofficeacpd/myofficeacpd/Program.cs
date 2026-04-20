@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using myofficeacpd.Data;
 
 namespace myofficeacpd
 {
@@ -8,6 +10,8 @@ namespace myofficeacpd
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<MyofficeAcpdDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Myoffice_ACPD")));
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
