@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using myofficeacpd.Data;
+using myofficeacpd.Interfaces;
+using myofficeacpd.Services;
 
 namespace myofficeacpd
 {
@@ -12,6 +14,8 @@ namespace myofficeacpd
             // Add services to the container.
             builder.Services.AddDbContext<MyofficeAcpdDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Myoffice_ACPD")));
+
+            builder.Services.AddScoped<IMyofficeacpdService, MyofficeacpdService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
