@@ -41,5 +41,16 @@ namespace myofficeacpd.Controllers
             var result = await _service.CreateAsync(request);
             return CreatedAtAction(nameof(GetBySid), new { sid = result.Sid }, result);
         }
+        // PUT api/myofficeacpd/{sid}
+        [HttpPut("{sid}")]
+        public async Task<ActionResult<PutAcpdResultModel>> Update(string sid, [FromBody] PutAcpdRequestModel request)
+        {
+            var result = await _service.UpdateAsync(sid, request);
+
+            if (result is null)
+                return NotFound();
+
+            return Ok(result);
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace myofficeacpd.Interfaces
         Task<IEnumerable<GetAcpdResultModel>> GetAllAsync(GetAcpdQueryModel query);
         Task<GetAcpdResultModel?> GetBySidAsync(string sid);
         Task<PostAcpdResultModel> CreateAsync(PostAcpdRequestModel request);
+        Task<PutAcpdResultModel?> UpdateAsync(string sid, PutAcpdRequestModel request);
     }
 }

@@ -109,6 +109,45 @@ namespace myofficeacpd.Services
             };
         }
 
+        public async Task<PutAcpdResultModel?> UpdateAsync(string sid, PutAcpdRequestModel request)
+        {
+            var entity = await _db.MyOfficeAcpds.FindAsync(sid);
+
+            if (entity is null)
+                return null;
+
+            entity.AcpdCname       = request.Cname;
+            entity.AcpdEname       = request.Ename;
+            entity.AcpdSname       = request.Sname;
+            entity.AcpdEmail       = request.Email;
+            entity.AcpdStatus      = request.Status ?? entity.AcpdStatus;
+            entity.AcpdStop        = request.Stop ?? entity.AcpdStop;
+            entity.AcpdStopMemo    = request.StopMemo;
+            entity.AcpdLoginId     = request.LoginId;
+            entity.AcpdMemo        = request.Memo;
+            entity.AcpdUpdDateTime = DateTime.Now;
+            entity.AcpdUpdId       = "SYS";
+
+            if (!string.IsNullOrWhiteSpace(request.LoginPwd))
+                entity.AcpdLoginPwd = request.LoginPwd;
+
+            await _db.SaveChangesAsync();
+
+            return new PutAcpdResultModel
+            {
+                Sid      = entity.AcpdSid,
+                Cname    = entity.AcpdCname,
+                Ename    = entity.AcpdEname,
+                Sname    = entity.AcpdSname,
+                Email    = entity.AcpdEmail,
+                Status   = entity.AcpdStatus,
+                Stop     = entity.AcpdStop,
+                StopMemo = entity.AcpdStopMemo,
+                LoginId  = entity.AcpdLoginId,
+                Memo     = entity.AcpdMemo,
+            };
+        }
+
         /// <summary>
         /// 依照 NEWSID SP 演算法產生 20 碼唯一主鍵：
         /// 2碼年份(Base36) + 3碼年內第幾天 + 5碼當天秒數 + 10碼亂數
