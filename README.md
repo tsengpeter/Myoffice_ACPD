@@ -83,9 +83,116 @@ DELETE /api/myofficeacpd/{id}     # 刪除資料
 
 ## 繳交清單
 
-- [ ] GitHub Repository（包含分支管理記錄）
-- [ ] .NET Core 8 Web API 專案原始碼
-- [ ] Swagger 可正常執行 CRUD，每個 API 附有測試 JSON
-- [ ] SQL Server 資料庫備份檔 `.bak`（包含測試資料）
-- [ ] README 說明專案架構與執行步驟
-- [ ] 提供 GitHub Repository URL
+- [x] GitHub Repository（包含分支管理記錄）
+- [x] .NET Core Web API 專案原始碼（.NET 10）
+- [x] Swagger 可正常執行 CRUD，每個 API 附有測試 JSON
+- [x] SQL Server 資料庫備份檔 `.bak`（包含測試資料）
+- [x] README 說明專案架構與執行步驟
+- [x] 提供 GitHub Repository URL：https://github.com/tsengpeter/Myoffice_ACPD.git
+
+---
+
+## 專案架構
+
+```
+backend-interview-mid/
+├── TSQLScript/
+│   └── init/
+│       └── init.sql                  # 資料庫初始化腳本（建表、SP、測試資料）
+├── myofficeacpd/
+│   └── myofficeacpd/
+│       ├── Controllers/
+│       │   └── MyofficeacpdController.cs   # API 路由（僅負責 HTTP 處理）
+│       ├── Data/
+│       │   ├── AppDbContext/
+│       │   │   └── MyofficeAcpdDbContext.cs
+│       │   └── Entities/
+│       │       ├── MyOfficeAcpd.cs         # 主資料表 Entity
+│       │       └── MyOfficeExcuteionLog.cs # 日誌資料表 Entity
+│       ├── Interfaces/
+│       │   └── IMyofficeacpdService.cs     # Service 介面定義
+│       ├── Models/
+│       │   ├── GetAcpdQueryModel.cs        # GET 查詢條件
+│       │   ├── GetAcpdResultModel.cs       # GET 回傳結果
+│       │   ├── PostAcpdRequestModel.cs     # POST 新增請求
+│       │   ├── PostAcpdResultModel.cs      # POST 回傳結果
+│       │   ├── PutAcpdRequestModel.cs      # PUT 更新請求
+│       │   └── PutAcpdResultModel.cs       # PUT 回傳結果
+│       ├── Services/
+│       │   └── MyofficeacpdService.cs      # 業務邏輯實作
+│       ├── appsettings.json                # 本機連線設定
+│       ├── appsettings.Docker.json         # Docker 容器連線設定
+│       ├── Dockerfile
+│       └── Program.cs
+├── docker-compose.yml
+└── Myoffice_ACPD.bak                       # 資料庫備份檔
+```
+
+---
+
+## 執行步驟
+
+### 方式一：本機直接執行（F5）
+
+**前置條件：**
+- .NET 10 SDK
+- SQL Server 2019+（本專案使用 `SQLEXPRESS2022`）
+
+**步驟：**
+
+1. 還原資料庫（執行 `TSQLScript/init/init.sql`，或還原 `Myoffice_ACPD.bak`）
+
+2. 修改 `appsettings.json` 連線字串：
+```json
+{
+  "ConnectionStrings": {
+    "Myoffice_ACPD": "Server=<你的SQL Server>;Database=Myoffice_ACPD;User ID=<帳號>;Password=<密碼>;TrustServerCertificate=True"
+  }
+}
+```
+
+3. 啟動專案：
+```bash
+cd myofficeacpd/myofficeacpd
+dotnet run
+```
+
+4. 開啟 Swagger UI：`http://localhost:<port>`
+
+---
+
+### 方式二：Docker 執行
+
+**前置條件：**
+- Docker Desktop
+- SQL Server 已在宿主機執行，並開放 TCP 連線
+
+**步驟：**
+
+1. 修改 `appsettings.Docker.json` 連線字串（預設使用 `host.docker.internal\SQLEXPRESS2022`）
+
+2. Build & 啟動：
+```bash
+cd myofficeacpd
+docker build -f myofficeacpd/Dockerfile -t myofficeacpd:latest .
+docker run -d -p 5050:8080 --add-host=host.docker.internal:host-gateway myofficeacpd:latest
+```
+
+或使用 docker-compose：
+```bash
+docker-compose up -d
+```
+
+3. 開啟 Swagger UI：`http://localhost:5050`
+
+---
+
+## API 說明
+
+| Method | URL | 說明 | 成功狀態碼 |
+|--------|-----|------|-----------|
+| GET | `/api/myofficeacpd` | 查詢所有（預設過濾停用） | 200 |
+| GET | `/api/myofficeacpd/{sid}` | 查詢單筆 | 200 |
+| POST | `/api/myofficeacpd` | 新增資料 | 201 |
+| PUT | `/api/myofficeacpd/{sid}` | 更新資料 | 200 |
+| DELETE | `/api/myofficeacpd/{sid}` | 軟刪除（Stop=true） | 204 |
