@@ -1,0 +1,6 @@
+@myofficeacpd_HostAddress = http://localhost:5172
+
+GET {{myofficeacpd_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
