@@ -1,0 +1,17 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_myoffice
+    environment:
+      SA_PASSWORD: "YourStrong@Passw0rd"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - D:/docker/sqlserver/data:/var/opt/mssql/data
+      - D:/docker/sqlserver/log:/var/opt/mssql/log
+      - D:/docker/sqlserver/backup:/var/opt/mssql/backup
+      - ./TSQLScript/init:/init
+    entrypoint: /bin/bash /init/entrypoint.sh
+    restart: unless-stopped
