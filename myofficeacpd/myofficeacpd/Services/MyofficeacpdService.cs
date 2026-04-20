@@ -70,6 +70,12 @@ namespace myofficeacpd.Services
 
         public async Task<PostAcpdResultModel> CreateAsync(PostAcpdRequestModel request)
         {
+            var existing = await _db.MyOfficeAcpds
+                .FirstOrDefaultAsync(x => x.AcpdLoginId == request.LoginId);
+
+            if (existing is not null && existing.AcpdStop == false)
+                throw new InvalidOperationException($"LoginId '{request.LoginId}' 已存在且為啟用狀態。");
+
             var sid = await GenerateNewSidAsync();
 
             var entity = new MyOfficeAcpd
@@ -115,6 +121,9 @@ namespace myofficeacpd.Services
 
             if (entity is null)
                 return null;
+
+            if (entity.AcpdStop == true)
+                throw new InvalidOperationException($"SID '{sid}' 已停用，無法更新。");
 
             entity.AcpdCname       = request.Cname;
             entity.AcpdEname       = request.Ename;

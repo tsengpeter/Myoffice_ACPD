@@ -38,19 +38,33 @@ namespace myofficeacpd.Controllers
         [HttpPost]
         public async Task<ActionResult<PostAcpdResultModel>> Create([FromBody] PostAcpdRequestModel request)
         {
-            var result = await _service.CreateAsync(request);
-            return CreatedAtAction(nameof(GetBySid), new { sid = result.Sid }, result);
+            try
+            {
+                var result = await _service.CreateAsync(request);
+                return CreatedAtAction(nameof(GetBySid), new { sid = result.Sid }, result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         // PUT api/myofficeacpd/{sid}
         [HttpPut("{sid}")]
         public async Task<ActionResult<PutAcpdResultModel>> Update(string sid, [FromBody] PutAcpdRequestModel request)
         {
-            var result = await _service.UpdateAsync(sid, request);
+            try
+            {
+                var result = await _service.UpdateAsync(sid, request);
 
-            if (result is null)
-                return NotFound();
+                if (result is null)
+                    return NotFound();
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         // DELETE api/myofficeacpd/{sid}
         [HttpDelete("{sid}")]
