@@ -34,5 +34,12 @@ namespace myofficeacpd.Controllers
 
             return Ok(result);
         }
+        // POST api/myofficeacpd
+        [HttpPost]
+        public async Task<ActionResult<PostAcpdResultModel>> Create([FromBody] PostAcpdRequestModel request)
+        {
+            var result = await _service.CreateAsync(request);
+            return CreatedAtAction(nameof(GetBySid), new { sid = result.Sid }, result);
+        }
     }
 }

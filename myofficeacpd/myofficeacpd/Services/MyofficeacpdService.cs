@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using myofficeacpd.Data;
+using myofficeacpd.Data.Entities;
 using myofficeacpd.Interfaces;
 using myofficeacpd.Models;
 
@@ -65,6 +66,78 @@ namespace myofficeacpd.Services
                 LoginId  = entity.AcpdLoginId,
                 Memo     = entity.AcpdMemo,
             };
+        }
+
+        public async Task<PostAcpdResultModel> CreateAsync(PostAcpdRequestModel request)
+        {
+            var sid = await GenerateNewSidAsync();
+
+            var entity = new MyOfficeAcpd
+            {
+                AcpdSid         = sid,
+                AcpdCname       = request.Cname,
+                AcpdEname       = request.Ename,
+                AcpdSname       = request.Sname,
+                AcpdEmail       = request.Email,
+                AcpdStatus      = request.Status ?? 0,
+                AcpdStop        = request.Stop ?? false,
+                AcpdStopMemo    = request.StopMemo,
+                AcpdLoginId     = request.LoginId,
+                AcpdLoginPwd    = request.LoginPwd,
+                AcpdMemo        = request.Memo,
+                AcpdNowDateTime = DateTime.Now,
+                AcpdNowId       = "SYS",
+                AcpdUpdDateTime = DateTime.Now,
+                AcpdUpdId       = "SYS",
+            };
+
+            _db.MyOfficeAcpds.Add(entity);
+            await _db.SaveChangesAsync();
+
+            return new PostAcpdResultModel
+            {
+                Sid      = entity.AcpdSid,
+                Cname    = entity.AcpdCname,
+                Ename    = entity.AcpdEname,
+                Sname    = entity.AcpdSname,
+                Email    = entity.AcpdEmail,
+                Status   = entity.AcpdStatus,
+                Stop     = entity.AcpdStop,
+                StopMemo = entity.AcpdStopMemo,
+                LoginId  = entity.AcpdLoginId,
+                Memo     = entity.AcpdMemo,
+            };
+        }
+
+        /// <summary>
+        /// 依照 NEWSID SP 演算法產生 20 碼唯一主鍵：
+        /// 2碼年份(Base36) + 3碼年內第幾天 + 5碼當天秒數 + 10碼亂數
+        /// </summary>
+        private async Task<string> GenerateNewSidAsync()
+        {
+            const string alphabets = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            string sid;
+            do
+            {
+                var now         = DateTime.Now;
+                var currentYear = Math.Min(now.Year - 2000, 1295);
+                var dayOfYear   = now.DayOfYear;
+                var secondOfDay = now.Second + now.Minute * 60 + now.Hour * 3600;
+
+                var firstDigit  = alphabets[(currentYear / 36) % 36];
+                var secondDigit = alphabets[currentYear % 36];
+                var prefix      = $"{firstDigit}{secondDigit}";
+                var dayCode     = dayOfYear.ToString().PadLeft(3, '0');
+                var secondCode  = secondOfDay.ToString().PadLeft(5, '0');
+                var random      = Math.Abs(BitConverter.ToInt64(Guid.NewGuid().ToByteArray(), 0)) % 10_000_000_000L;
+                var randomValue = random.ToString().PadLeft(10, '0');
+
+                sid = prefix + dayCode + secondCode + randomValue;
+            }
+            while (await _db.MyOfficeAcpds.AnyAsync(x => x.AcpdSid == sid));
+
+            return sid;
         }
     }
 }
