@@ -52,5 +52,16 @@ namespace myofficeacpd.Controllers
 
             return Ok(result);
         }
+        // DELETE api/myofficeacpd/{sid}
+        [HttpDelete("{sid}")]
+        public async Task<IActionResult> Delete(string sid)
+        {
+            var success = await _service.DeleteAsync(sid);
+
+            if (!success)
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }

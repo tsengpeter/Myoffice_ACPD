@@ -148,6 +148,21 @@ namespace myofficeacpd.Services
             };
         }
 
+        public async Task<bool> DeleteAsync(string sid)
+        {
+            var entity = await _db.MyOfficeAcpds.FindAsync(sid);
+
+            if (entity is null)
+                return false;
+
+            entity.AcpdStop        = true;
+            entity.AcpdUpdDateTime = DateTime.Now;
+            entity.AcpdUpdId       = "SYS";
+
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
         /// <summary>
         /// 依照 NEWSID SP 演算法產生 20 碼唯一主鍵：
         /// 2碼年份(Base36) + 3碼年內第幾天 + 5碼當天秒數 + 10碼亂數

@@ -8,5 +8,6 @@ namespace myofficeacpd.Interfaces
         Task<GetAcpdResultModel?> GetBySidAsync(string sid);
         Task<PostAcpdResultModel> CreateAsync(PostAcpdRequestModel request);
         Task<PutAcpdResultModel?> UpdateAsync(string sid, PutAcpdRequestModel request);
+        Task<bool> DeleteAsync(string sid);
     }
 }
